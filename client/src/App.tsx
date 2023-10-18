@@ -60,6 +60,11 @@ export const GET_CURRENT_USER = gql`
       handle
       avatarUrl
       createdAt
+      stats {
+        tweetCount
+        followerCount
+        followingCount
+      }
     }
     suggestions {
       name
@@ -75,18 +80,23 @@ const App: React.FC = () => {
   const favorites = (rawFavorites || [])
     .map((f) => f.tweet?.id)
     .filter(isDefined);
+  const { loading, error, data } = useGetCurrentUserQuery();
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!data) return <p>No data.</p>;
+  const { currentUser, suggestions = [] } = data;
 
   return (
     <div>
-      <LeftSidebar currentUser={CURRENT_USER} />
-      <Header currentUser={CURRENT_USER} />
+      <LeftSidebar currentUser={{ ...CURRENT_USER, ...currentUser }} />
+      <Header currentUser={currentUser} />
 
       <div id="container" className="wrapper nav-closed">
         <Timeline
           currentUserId={CURRENT_USER.id}
           currentUserFavorites={favorites}
         />
-        <RightBar trends={TRENDS} suggestions={SUGGESTIONS} />
+        <RightBar trends={TRENDS} suggestions={suggestions} />
       </div>
     </div>
   );
