@@ -2,6 +2,7 @@ type Query {
   currentUser: User!
   suggestions: [Suggestion!]!
   tweets: [Tweet!]!
+  trends: [Trend!]!
 }
 type User {
   id: String!
@@ -12,6 +13,7 @@ type User {
   createdAt: String!
   updatedAt: String!
   stats: UserStats
+  favorites: [Favorite!]
 }
 type Suggestion {
   name: String!
@@ -41,4 +43,35 @@ type TweetStats {
 
 type Mutation {
   createTweet(userId: String!, body: String!): Tweet!
+  createFavorite(favorite: FavoriteInput!): Favorite!
+  deleteFavorite(favorite: FavoriteInput!): Favorite!
 }
+
+type Favorite {
+  id: String!
+  tweet: Tweet!
+  user: User!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input FavoriteInput {
+  userId: String!
+  tweetId: String!
+}
+
+type HashtagTrend {
+  hashtag: String!
+  tweetCount: Int!
+}
+type TopicTrendQuote {
+  title: String!
+  description: String!
+  imageUrl: String!
+}
+type TopicTrend {
+  topic: String!
+  tweetCount: Int!
+  quote: TopicTrendQuote
+}
+union Trend = TopicTrend | HashtagTrend
